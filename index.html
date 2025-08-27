@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Wiara Przenosi Góry — Logowanie</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet" />
+  <style>
+    :root{
+      --bg:#eef8ff;
+      --card:#fff;
+      --accent-grad: linear-gradient(90deg,#5a8dee,#1e3a8a);
+      --google-grad: linear-gradient(135deg,#3b82f6,#60a5fa);
+      --apple-grad: linear-gradient(135deg,#111827,#374151);
+      --text:#0b1b4a;
+      --muted:#6b7280;
+      --max-card-width:460px; /* mobile-first */
+      --icon-size:56px;
+      --radius:14px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:18px;font-family:system-ui,Segoe UI,Arial;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+
+    .card{background:var(--card);width:100%;max-width:var(--max-card-width);border-radius:var(--radius);padding:18px;box-shadow:0 10px 30px rgba(13,30,70,0.06);border:1px solid rgba(0,0,0,0.04)}
+
+    /* Header */
+    h1{font-family:'Pacifico',cursive;margin:0 0 6px;font-size:26px;line-height:1}
+    .lead{margin:0 0 12px;color:var(--muted);font-size:14px}
+
+    /* layout helpers */
+    .center{display:flex;gap:10px;justify-content:center;flex-wrap:nowrap;flex-direction:column}
+
+    /* buttons */
+    .btn{display:inline-flex;align-items:center;gap:10px;padding:14px 16px;border-radius:12px;border:none;cursor:pointer;font-weight:700;color:#fff;min-width:0;justify-content:center;box-shadow:0 6px 18px rgba(14,34,90,0.06);font-size:15px}
+    .btn:active{transform:translateY(1px)}
+    .btn-google{background:var(--google-grad)}
+    .btn-apple{background:var(--apple-grad)}
+    .btn.ghost{background:transparent;color:var(--text);border:1px solid rgba(14,34,90,0.06)}
+
+    .hidden{display:none}
+    label{display:block;margin-top:10px;font-weight:600;color:var(--text);font-size:14px}
+    input[type=text],input[type=tel],input[type=email]{width:100%;padding:12px;border-radius:10px;border:1px solid #e6eefc;background:#f8fbff;font-size:15px}
+    .small{font-size:13px;color:var(--muted)}
+    footer{margin-top:16px;text-align:center;font-size:13px;color:var(--muted)}
+
+    /* ICONS - radio + label */
+    .icons-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:8px}
+    .icon-radio{display:none}
+    .icon-label{width:var(--icon-size);height:var(--icon-size);border-radius:50%;display:inline-block;cursor:pointer;border:3px solid transparent;box-sizing: content-box;outline-offset:4px;transition:transform .12s ease, box-shadow .12s ease}
+    .icon-label:focus{outline:3px solid rgba(30,58,138,0.18)}
+    .icon-radio:checked + .icon-label{transform:translateY(-4px);box-shadow:0 10px 30px rgba(14,34,90,0.12);border:3px solid rgba(255,255,255,0.18)}
+
+    /* 12 gradient options */
+    .g1{background:linear-gradient(135deg,#0f172a,#3b82f6);} .g2{background:linear-gradient(135deg,#1e3a8a,#60a5fa);} .g3{background:linear-gradient(135deg,#f97316,#f43f5e);} .g4{background:linear-gradient(135deg,#db2777,#fb7185);} .g5{background:linear-gradient(135deg,#06b6d4,#60a5fa);} .g6{background:linear-gradient(135deg,#10b981,#059669);} .g7{background:linear-gradient(135deg,#f3f4f6,#94a3b8);} .g8{background:linear-gradient(135deg,#7c3aed,#c084fc);} .g9{background:linear-gradient(135deg,#0ea5a4,#7dd3fc);} .g10{background:linear-gradient(135deg,#ff7a18,#ff4d6d);} .g11{background:linear-gradient(135deg,#c084fc,#f472b6);} .g12{background:linear-gradient(135deg,#f59e0b,#f97316);} 
+
+    .profile-row{display:flex;gap:12px;align-items:center;margin-top:12px}
+    .avatar-large{width:64px;height:64px;border-radius:50%;display:inline-block;box-shadow:0 6px 18px rgba(14,34,90,0.06);flex:0 0 auto}
+    .muted-note{margin-top:10px;padding:8px;border-radius:8px;background:linear-gradient(180deg,#f8fafc,#ffffff);border:1px solid #eef3ff;color:var(--muted)}
+
+    /* responsive tweaks (larger screens) */
+    @media (min-width:520px){
+      :root{--max-card-width:640px;--icon-size:72px}
+      .center{flex-direction:row}
+      .center .btn{min-width:170px}
+      .icons-row{grid-template-columns:repeat(6,1fr)}
+      h1{font-size:30px}
+      .lead{font-size:15px}
+    }
+
+    /* make interactive elements easy to tap */
+    button, input, .icon-label{touch-action:manipulation}
+
+    /* subtle focus state for accessibility */
+    button:focus{outline:3px solid rgba(59,130,246,0.18);outline-offset:3px}
+    input:focus{outline:3px solid rgba(59,130,246,0.12);outline-offset:2px}
+
+    /* other-users list formatting */
+    .users-list{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+    .user-row{display:flex;align-items:center;gap:10px;padding:8px;border-radius:10px;background:linear-gradient(180deg, rgba(0,0,0,0.02), transparent)}
+    .user-row .av{width:48px;height:48px;border-radius:50%;display:inline-block}
+
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Wiara Przenosi Góry</h1>
+    <p class="lead">Zaloguj się przez Google lub Apple ID — formularz logowania pojawi się od razu po wyborze providera.</p>
+
+    <!-- STEP 1: choose provider (gradient buttons, no icons) -->
+    <div id="auth-stage">
+      <div class="center" style="margin-bottom:12px">
+        <button class="btn btn-google" id="btn-google">Zaloguj przez Google</button>
+        <button class="btn btn-apple" id="btn-apple">Zaloguj przez Apple ID</button>
+      </div>
+      <p class="small">Po wyborze providera wpisz imię i email (jeśli wymagane), a następnie uzupełnij numer telefonu i wybierz ikonkę.</p>
+    </div>
+
+    <!-- PROVIDER FORM (appears after click) -->
+    <div id="provider-form" class="hidden" style="margin-top:12px">
+      <h3 id="prov-title">Logowanie</h3>
+      <p class="small">Podaj imię i email powiązany z kontem.</p>
+      <label for="prov-name">Imię i nazwisko</label>
+      <input id="prov-name" type="text" placeholder="Jan Kowalski" />
+      <label for="prov-email">Email</label>
+      <input id="prov-email" type="email" placeholder="jan@przyklad.pl" />
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap">
+        <button id="prov-cancel" class="btn ghost">Anuluj</button>
+        <button id="prov-next" class="btn" style="background:var(--accent-grad)">Dalej</button>
+      </div>
+    </div>
+
+    <!-- PROFILE: phone + icon -->
+    <div id="profile-stage" class="hidden" style="margin-top:12px">
+      <h3>Uzupełnij profil</h3>
+      <p class="small">Podaj numer telefonu (będziemy informować o nowych wpisach) i wybierz ikonkę profilową.</p>
+
+      <label for="profile-phone">Numer telefonu</label>
+      <input id="profile-phone" type="tel" placeholder="+48 600 700 800" />
+
+      <label>Wybierz ikonkę (12 opcji)</label>
+      <div class="icons-row" id="icons-row">
+        <input class="icon-radio" type="radio" name="icon" id="i1" value="g1"><label class="icon-label g1" for="i1" tabindex="0" aria-label="Ikona 1"></label>
+        <input class="icon-radio" type="radio" name="icon" id="i2" value="g2"><label class="icon-label g2" for="i2" tabindex="0" aria-label="Ikona 2"></label>
+        <input class="icon-radio" type="radio" name="icon" id="i3" value="g3"><label class="icon-label g3" for="i3" tabindex="0" aria-label="Ikona 3"></label>
+        <input class="icon-radio" type="radio" name="icon" id="i4" value="g4"><label class="icon-label g4" for="i4" tabindex="0" aria-label="Ikona 4"></label>
+        <input class="icon-radio" type="radio" name="icon" id="i5" value="g5"><label class="icon-label g5" for="i5" tabindex="0" aria-label="Ikona 5"></label>
+        <input class="icon-radio" type="radio" name="icon" id="i6" value="g6"><label class="icon-label g6" for="i6" tabindex="0" aria-label="Ikona 6"></label>
+        <input class="icon-radio" type="radio" name="icon" id="i7" value="g7"><label class="icon-label g7" for="i7" tabindex="0" aria-label="Ikona 7"></label>
+        <input class="icon-radio" type="radio" name="icon" id="i8" value="g8"><label class="icon-label g8" for="i8" tabindex="0" aria-label="Ikona 8"></label>
+        <input class="icon-radio" type="radio" name="icon" id="i9" value="g9"><label class="icon-label g9" for="i9" tabindex="0" aria-label="Ikona 9"></label>
+        <input class="icon-radio" type="radio" name="icon" id="i10" value="g10"><label class="icon-label g10" for="i10" tabindex="0" aria-label="Ikona 10"></label>
+        <input class="icon-radio" type="radio" name="icon" id="i11" value="g11"><label class="icon-label g11" for="i11" tabindex="0" aria-label="Ikona 11"></label>
+        <input class="icon-radio" type="radio" name="icon" id="i12" value="g12"><label class="icon-label g12" for="i12" tabindex="0" aria-label="Ikona 12"></label>
+      </div>
+
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap">
+        <button id="profile-cancel" class="btn ghost">Anuluj</button>
+        <button id="profile-save" class="btn" style="background:var(--accent-grad)">Zapisz profil</button>
+      </div>
+    </div>
+
+    <!-- AFTER LOGIN -->
+    <div id="after-login" class="hidden" style="margin-top:12px">
+      <div class="profile-row">
+        <div id="avatar" class="avatar-large g7" aria-hidden="true"></div>
+        <div>
+          <div id="welcome"><strong></strong></div>
+          <div class="small" id="sub"></div>
+        </div>
+      </div>
+
+      <p class="small" style="margin-top:12px">Możesz zobaczyć innych użytkowników (tylko imię/nazwisko + ikona).</p>
+      <div id="other-users" style="margin-top:12px"></div>
+
+      <div style="margin-top:14px;display:flex;justify-content:flex-end">
+        <button id="logout" class="btn" style="background:var(--accent-grad)">Wyloguj się</button>
+      </div>
+    </div>
+
+  </div>
+
+<script>
+/* Ustawienia:
+ * FIREBASE_ENABLED = false  -> lokalne przechowywanie (localStorage)
+ * FIREBASE_ENABLED = true   -> zapisy do Firestore (wtedy admin może widzieć logi z innych domen)
+ * W razie potrzeby wklej konfigurację Firebase poniżej:
+ */
+const FIREBASE_ENABLED = false;
+const FIREBASE_CONFIG = {}; // wklej tu dane projektu jeśli chcesz Firestore
+
+// pomocnicze
+const ls = { get:k=>JSON.parse(localStorage.getItem(k)||'null'), set:(k,v)=>localStorage.setItem(k,JSON.stringify(v)), remove:k=>localStorage.removeItem(k) };
+
+// UI refs
+const btnGoogle = document.getElementById('btn-google'), btnApple = document.getElementById('btn-apple');
+const authStage = document.getElementById('auth-stage'), provForm = document.getElementById('provider-form');
+const provTitle = document.getElementById('prov-title'), provName = document.getElementById('prov-name'), provEmail = document.getElementById('prov-email');
+const provNext = document.getElementById('prov-next'), provCancel = document.getElementById('prov-cancel');
+const profileStage = document.getElementById('profile-stage'), profilePhone = document.getElementById('profile-phone');
+const profileSave = document.getElementById('profile-save'), profileCancel = document.getElementById('profile-cancel');
+const afterLogin = document.getElementById('after-login'), avatar = document.getElementById('avatar'), welcome = document.getElementById('welcome'), sub = document.getElementById('sub'), otherUsersDiv = document.getElementById('other-users'), logoutBtn = document.getElementById('logout');
+
+let currentProvider = null;
+let currentTransientUser = null;
+
+// Firebase (opcjonalnie)
+let firebaseApp=null, db=null;
+async function initFirebase(){
+  if(!FIREBASE_ENABLED) return;
+  if(!FIREBASE_CONFIG || !FIREBASE_CONFIG.projectId){ alert('Brakuje konfiguracji Firestore.'); return; }
+  await loadScript('https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js');
+  await loadScript('https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js');
+  firebaseApp = firebase.initializeApp(FIREBASE_CONFIG);
+  db = firebase.firestore();
+}
+function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s)})}
+
+// Po kliknięciu provider -> pokaż formularz (bez ikon)
+btnGoogle.addEventListener('click', ()=>openProviderForm('Google'));
+btnApple.addEventListener('click', ()=>openProviderForm('Apple'));
+
+function openProviderForm(provider){
+  currentProvider = provider;
+  provTitle.textContent = `Logowanie — ${provider}`;
+  provName.value = ''; provEmail.value = '';
+  authStage.classList.add('hidden'); provForm.classList.remove('hidden');
+  provName.focus();
+}
+provCancel.addEventListener('click', ()=>{ provForm.classList.add('hidden'); authStage.classList.remove('hidden'); currentProvider = null; });
+
+// następny krok: sprawdź czy użytkownik istnieje, jeśli nie -> profil
+provNext.addEventListener('click', async ()=>{
+  const name = provName.value.trim(), email = provEmail.value.trim();
+  if(!name || !email){ alert('Wpisz imię i email.'); return; }
+  const username = name.replace(/\s+/g,'').slice(0,12) + Math.floor(100+Math.random()*900);
+  currentTransientUser = { name, email, username, provider: currentProvider };
+
+  if(FIREBASE_ENABLED && !db) await initFirebase();
+
+  if(FIREBASE_ENABLED && db){
+    const q = await db.collection('users').where('email','==', email).limit(1).get();
+    if(!q.empty){
+      const doc = q.docs[0]; const user = { id: doc.id, ...doc.data() };
+      const ts = new Date().toISOString();
+      await db.collection('users').doc(user.id).update({ lastLogin: ts });
+      await db.collection('loginLog').add({ ...user, provider: currentProvider, timestamp: ts });
+      localStorage.setItem('loggedUser', JSON.stringify(user));
+      showAfterLogin(user);
+      return;
+    }
+    openProfileStage();
+    return;
+  }
+
+  // localStorage flow
+  const users = JSON.parse(localStorage.getItem('users')||'[]');
+  const found = users.find(u => u.email === email);
+  if(found){
+    found.lastLogin = new Date().toISOString();
+    localStorage.setItem('loggedUser', JSON.stringify(found));
+    const logs = JSON.parse(localStorage.getItem('loginLog')||'[]');
+    logs.unshift({...found, provider: currentProvider, timestamp: found.lastLogin});
+    localStorage.setItem('loginLog', JSON.stringify(logs));
+    showAfterLogin(found);
+    return;
+  }
+
+  openProfileStage();
+});
+
+// open profile stage
+function openProfileStage(){
+  provForm.classList.add('hidden');
+  profileStage.classList.remove('hidden');
+  profilePhone.value = '';
+  document.querySelectorAll('.icon-radio').forEach(r=>r.checked=false);
+  setTimeout(()=>profilePhone.focus(), 80);
+}
+profileCancel.addEventListener('click', ()=>{ profileStage.classList.add('hidden'); authStage.classList.remove('hidden'); currentTransientUser = null; currentProvider = null; });
+
+// save profile (phone + icon)
+profileSave.addEventListener('click', async ()=>{
+  const phone = profilePhone.value.trim();
+  const iconEl = document.querySelector('.icon-radio:checked');
+  if(!phone){ alert('Podaj numer telefonu.'); profilePhone.focus(); return; }
+  if(!iconEl){ alert('Wybierz ikonkę.'); return; }
+  const icon = iconEl.value;
+  const user = {
+    name: currentTransientUser.name,
+    username: currentTransientUser.username,
+    email: currentTransientUser.email,
+    phone,
+    icon,
+    provider: currentTransientUser.provider,
+    createdAt: new Date().toISOString(),
+    lastLogin: new Date().toISOString()
+  };
+
+  if(FIREBASE_ENABLED && db){
+    const ref = await db.collection('users').add(user);
+    user.id = ref.id;
+    await db.collection('loginLog').add({...user, timestamp: user.lastLogin});
+    localStorage.setItem('loggedUser', JSON.stringify(user));
+    showAfterLogin(user);
+    return;
+  }
+
+  const users = JSON.parse(localStorage.getItem('users')||'[]');
+  users.push(user); localStorage.setItem('users', JSON.stringify(users));
+  const logs = JSON.parse(localStorage.getItem('loginLog')||'[]');
+  logs.unshift({...user, timestamp: user.lastLogin}); localStorage.setItem('loginLog', JSON.stringify(logs));
+  localStorage.setItem('loggedUser', JSON.stringify(user));
+  showAfterLogin(user);
+});
+
+// show logged UI
+function showAfterLogin(user){
+  profileStage.classList.add('hidden');
+  authStage.classList.add('hidden');
+  afterLogin.classList.remove('hidden');
+  avatar.className = 'avatar-large ' + (user.icon || 'g7');
+  welcome.innerHTML = `<strong>Witaj ${user.username}!</strong>`;
+  sub.textContent = `Zalogowano przez: ${user.provider}`;
+  renderOtherUsers(user.email);
+}
+
+async function renderOtherUsers(meEmail){
+  if(FIREBASE_ENABLED && db){
+    const snap = await db.collection('users').get();
+    const users = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(u => u.email !== meEmail);
+    renderList(users);
+    return;
+  }
+  const users = JSON.parse(localStorage.getItem('users')||'[]').filter(u => u.email !== meEmail);
+  renderList(users);
+}
+function renderList(users){
+  if(!users || users.length === 0){ otherUsersDiv.innerHTML = '<p class="small">Brak innych użytkowników.</p>'; return; }
+  const container = document.createElement('div'); container.className='users-list';
+  users.forEach(u=>{
+    const row = document.createElement('div'); row.className='user-row';
+    const av = document.createElement('span'); av.className = 'av ' + (u.icon||'g7');
+    const text = document.createElement('div'); text.innerHTML = `<strong>${u.name}</strong><div class="small">${u.username}</div>`;
+    row.appendChild(av); row.appendChild(text); container.appendChild(row);
+  });
+  otherUsersDiv.innerHTML = ''; otherUsersDiv.appendChild(container);
+}
+
+// logout
+logoutBtn.addEventListener('click', ()=>{ localStorage.removeItem('loggedUser'); afterLogin.classList.add('hidden'); authStage.classList.remove('hidden'); });
+
+// restore if logged
+window.addEventListener('load', async ()=>{
+  if(FIREBASE_ENABLED) await initFirebase();
+  const logged = JSON.parse(localStorage.getItem('loggedUser')||'null');
+  if(logged) showAfterLogin(logged);
+  // keyboard on labels
+  document.querySelectorAll('.icon-label').forEach(lbl=>{ lbl.addEventListener('keydown', e=>{ if(e.key === 'Enter' || e.key === ' ') { lbl.click(); e.preventDefault(); } }); });
+});
+</script>
+</body>
+</html>
+
